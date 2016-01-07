@@ -20,6 +20,15 @@ In addition, you will need a box containing RHEL 7.1 that has the name
 Virtualbox image and give it that name -- this is how this `Vagrantfile` is
 actually tested.
 
+## Environment Variables
+You will need two environment variables set before you can use `vagrant up`:
+
+* `SUB_USERNAME`: Your RHSM (customer portal) account username
+* `SUB_PASSWORD`: Your RHSM (customer portal) password
+
+These are the credentials that the vagrant-registration plugin will use to
+register your systems.
+
 ## Time
 Vagrant is really slow to provision VMs, and this could much more easily be done
 using snapshotting and various other tools in Virtualbox directly, but we'll get

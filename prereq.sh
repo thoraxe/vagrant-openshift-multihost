@@ -10,7 +10,12 @@ subscription-manager repos \
 
 # install basic prereq packages
 yum -y install deltarpm
-yum -y install wget vim-enhanced net-tools bind-utils tmux git atomic-openshift-utils
+yum -y install wget vim-enhanced net-tools bind-utils tmux git
+
+if [ $1 == "master" ]
+then
+  yum -y install atomic-openshift-utils
+fi
 
 # configure the resolver
 grep 144.4 /etc/resolv.conf

@@ -22,6 +22,7 @@ Vagrant.configure(2) do |config|
   config.vm.provider "virtualbox" do |v|
     v.memory = 2048
     v.cpus = 1
+    v.linked_clone = true
   end
   
   # node2
@@ -34,6 +35,13 @@ Vagrant.configure(2) do |config|
     # set up dnsmasq on node2
     v.vm.provision :file, source: "dnsmasq.conf", destination: "dnsmasq.conf"
     v.vm.provision :shell, path: "dnsmasq.sh"
+
+    # ssh keys
+    v.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
+    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa"
+    v.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
+    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa.pub"
+    v.vm.provision :shell, inline: "cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
   end
 
   # node1
@@ -42,6 +50,13 @@ Vagrant.configure(2) do |config|
     v.vm.network :private_network, ip: "192.168.144.3", :adapter => 2
     v.vm.hostname = "ose3-node1.example.com"
     v.vm.provision :shell, path: "prereq.sh"
+
+    # ssh keys
+    v.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
+    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa"
+    v.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
+    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa.pub"
+    v.vm.provision :shell, inline: "cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
   end
 
   # master
@@ -50,8 +65,15 @@ Vagrant.configure(2) do |config|
     v.vm.box = "rhel-71-vbox"
     v.vm.network :private_network, ip: "192.168.144.2", :adapter => 2
     v.vm.hostname = "ose3-master.example.com"
-    v.vm.provision :shell, path: "prereq.sh"
+    v.vm.provision :shell, path: "prereq.sh", args: "master"
     v.vm.provision :file, source: "installer.cfg.yaml", destination: "installer.cfg.yaml"
+
+    # ssh keys
+    v.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
+    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa"
+    v.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
+    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa.pub"
+    v.vm.provision :shell, inline: "cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
   end
 
 end
