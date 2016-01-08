@@ -65,13 +65,14 @@ Vagrant.configure(2) do |config|
     v.vm.network :private_network, ip: "192.168.144.2", :adapter => 2
     v.vm.hostname = "ose3-master.example.com"
     v.vm.provision :shell, path: "prereq.sh", args: "master"
-    v.vm.provision :file, source: "installer.cfg.yaml", destination: "installer.cfg.yaml"
+    v.vm.provision :shell, inline: "mkdir -p .config/openshift", privileged: false
+    v.vm.provision :file, source: "installer.cfg.yaml", destination: ".config/openshift/installer.cfg.yml"
 
     # ssh keys
     ssh_provision(v)
 
     # openshift installation
-    v.vm.provision :shell, inline: "atomic-openshift-installer -vvvv -u -c /home/vagrant/installer.cfg.yaml install"
+    v.vm.provision :shell, inline: "atomic-openshift-installer -vvvv -u install", privileged: false
   end
 
 end
