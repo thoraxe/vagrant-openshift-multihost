@@ -1,5 +1,5 @@
 ansible_log_path: /tmp/ansible.log
-ansible_ssh_user: root
+ansible_ssh_user: vagrant
 hosts:
 - connect_to: ose3-master.example.com
   hostname: ose3-master.example.com

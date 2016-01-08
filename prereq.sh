@@ -9,7 +9,7 @@ subscription-manager repos \
 --enable="rhel-7-server-ose-3.1-rpms"
 
 # install basic prereq packages
-yum -y install deltarpm
+#yum -y install deltarpm
 yum -y install wget vim-enhanced net-tools bind-utils tmux git
 
 if [ $1 == "master" ]

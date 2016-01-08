@@ -25,23 +25,27 @@ Vagrant.configure(2) do |config|
     v.linked_clone = true
   end
   
+  # the ssh key configuration is basically identical for all vms
+  def ssh_provision(boxdef)
+    boxdef.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
+    boxdef.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
+    boxdef.vm.provision :file, source: "ssh-config", destination: "~/.ssh/config"
+    boxdef.vm.provision :shell, path: "sshsetup.sh"
+  end
+
   # node2
   config.vm.define "node2" do |v|
     v.vm.box = "rhel-71-vbox"
     v.vm.network :private_network, ip: "192.168.144.4", :adapter => 2
     v.vm.hostname = "ose3-node2.example.com"
-    v.vm.provision :shell, path: "prereq.sh"
+    v.vm.provision :shell, path: "prereq.sh", args: "notmaster"
 
     # set up dnsmasq on node2
     v.vm.provision :file, source: "dnsmasq.conf", destination: "dnsmasq.conf"
     v.vm.provision :shell, path: "dnsmasq.sh"
 
     # ssh keys
-    v.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
-    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa"
-    v.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
-    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa.pub"
-    v.vm.provision :shell, inline: "cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
+    ssh_provision(v)
   end
 
   # node1
@@ -49,14 +53,10 @@ Vagrant.configure(2) do |config|
     v.vm.box = "rhel-71-vbox"
     v.vm.network :private_network, ip: "192.168.144.3", :adapter => 2
     v.vm.hostname = "ose3-node1.example.com"
-    v.vm.provision :shell, path: "prereq.sh"
+    v.vm.provision :shell, path: "prereq.sh", args: "notmaster"
 
     # ssh keys
-    v.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
-    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa"
-    v.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
-    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa.pub"
-    v.vm.provision :shell, inline: "cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
+    ssh_provision(v)
   end
 
   # master
@@ -69,11 +69,10 @@ Vagrant.configure(2) do |config|
     v.vm.provision :file, source: "installer.cfg.yaml", destination: "installer.cfg.yaml"
 
     # ssh keys
-    v.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
-    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa"
-    v.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
-    v.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa.pub"
-    v.vm.provision :shell, inline: "cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys"
+    ssh_provision(v)
+
+    # openshift installation
+    v.vm.provision :shell, inline: "atomic-openshift-installer -vvvv -u -c /home/vagrant/installer.cfg.yaml install"
   end
 
 end
