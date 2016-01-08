@@ -66,7 +66,7 @@ Vagrant.configure(2) do |config|
     v.vm.hostname = "ose3-master.example.com"
     v.vm.provision :shell, path: "prereq.sh", args: "master"
     v.vm.provision :shell, inline: "mkdir -p .config/openshift", privileged: false
-    v.vm.provision :file, source: "installer.cfg.yaml", destination: ".config/openshift/installer.cfg.yml"
+    v.vm.provision :file, source: "installer.cfg.yml", destination: ".config/openshift/installer.cfg.yml"
 
     # ssh keys
     ssh_provision(v)
