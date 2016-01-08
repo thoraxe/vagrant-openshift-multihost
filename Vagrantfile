@@ -29,7 +29,6 @@ Vagrant.configure(2) do |config|
   def ssh_provision(boxdef)
     boxdef.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
     boxdef.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
-    boxdef.vm.provision :file, source: "ssh-config", destination: "~/.ssh/config"
     boxdef.vm.provision :shell, path: "sshsetup.sh"
   end
 
