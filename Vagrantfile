@@ -24,12 +24,17 @@ Vagrant.configure(2) do |config|
     v.cpus = 1
     v.linked_clone = true
   end
-  
+
+  config.vm.provider "libvirt" do |libvirt, override|
+    libvirt.cpus = 2
+    libvirt.memory = 1024
+    libvirt.driver = 'kvm'
+  end
+
   # the ssh key configuration is basically identical for all vms
   def ssh_provision(boxdef)
     boxdef.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
     boxdef.vm.provision :file, source: "ose.pub", destination: "~/.ssh/id_rsa.pub"
-    boxdef.vm.provision :file, source: "ssh-config", destination: "~/.ssh/config"
     boxdef.vm.provision :shell, path: "sshsetup.sh"
   end
 
@@ -66,13 +71,14 @@ Vagrant.configure(2) do |config|
     v.vm.network :private_network, ip: "192.168.144.2", :adapter => 2
     v.vm.hostname = "ose3-master.example.com"
     v.vm.provision :shell, path: "prereq.sh", args: "master"
-    v.vm.provision :file, source: "installer.cfg.yaml", destination: "installer.cfg.yaml"
+    v.vm.provision :shell, inline: "mkdir -p .config/openshift", privileged: false
+    v.vm.provision :file, source: "installer.cfg.yml", destination: ".config/openshift/installer.cfg.yml"
 
     # ssh keys
     ssh_provision(v)
 
     # openshift installation
-    v.vm.provision :shell, inline: "atomic-openshift-installer -vvvv -u -c /home/vagrant/installer.cfg.yaml install"
+    v.vm.provision :shell, inline: "atomic-openshift-installer -vvvv -u install", privileged: false
   end
 
 end
