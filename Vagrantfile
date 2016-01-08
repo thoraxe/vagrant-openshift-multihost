@@ -24,7 +24,13 @@ Vagrant.configure(2) do |config|
     v.cpus = 1
     v.linked_clone = true
   end
-  
+
+  config.vm.provider "libvirt" do |libvirt, override|
+    libvirt.cpus = 2
+    libvirt.memory = 1024
+    libvirt.driver = 'kvm'
+  end
+
   # the ssh key configuration is basically identical for all vms
   def ssh_provision(boxdef)
     boxdef.vm.provision :file, source: "ose.key", destination: "~/.ssh/id_rsa"
