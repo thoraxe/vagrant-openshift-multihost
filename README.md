@@ -16,7 +16,7 @@ The following software prerequisites must be met:
 * vagrant-registration plugin
 
 In addition, you will need a box containing RHEL 7.1 that has the name
-"rhel-71-vbox". You could import the Red Hat Container Development Kit
+"rhel-71-cdk". You could import the Red Hat Container Development Kit
 Virtualbox image and give it that name -- this is how this `Vagrantfile` is
 actually tested.
 
@@ -27,19 +27,19 @@ You will need two environment variables set before you can use `vagrant up`:
 * `SUB_PASSWORD`: Your RHSM (customer portal) password
 
 These are the credentials that the vagrant-registration plugin will use to
-register your systems.
+register your systems. You will need a valid account with OpenShift
+subscriptions for this to work.
 
 ## Time
-Vagrant is really slow to provision VMs, and this could much more easily be done
-using snapshotting and various other tools in Virtualbox directly, but we'll get
-there. Having to register the VMs individually takes quite a bit of time, too.
+We are using linked clones in the case of VirtualBox, which is the only
+virtualization engine this has been tested against. 
 
 All times are for a T440s with SSD:
 
 ```
 $ time vagrant up
 ...
-real    5m14.941s
-user    0m8.808s
-sys     0m5.821s
+real    13m50.599s
+user    0m11.558s
+sys     0m7.285s
 ```
